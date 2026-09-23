@@ -124,7 +124,7 @@ Retrieve normalized financial statement data.
 
 ```python
 filing.get_financials(period_type=..., statement=...)
-filing.get_financials(period_type=Eumn.QTD, statement=Enum.INCOME)
+filing.get_financials(period_type=Enum.QTD, statement=Enum.INCOME)
 ```
 
 ## 8. Role of `edgartools`
