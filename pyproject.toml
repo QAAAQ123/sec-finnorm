@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=79.0.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sec-finnorm"
+description = 'SEC financial statement normalization and analysis library for Python'
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+
+authors = [
+    { name = "Jaewon Kim", email = "kjw987a@gmail.com" },
+]
+
+keywords = [
+    "sec", "edgar", "financial-statements", "xbrl", "finance", "income statement", 
+    "balance sheet", "cashflow statement",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
+
+
+dependencies = [
+    "edgartools"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
