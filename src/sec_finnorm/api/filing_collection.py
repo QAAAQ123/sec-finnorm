@@ -16,7 +16,7 @@ returns a `FilingCollection`:
 - `from_dates()`: by company and a period-of-report date range (YYYY-mm-dd)
 - `from_accessions()`: by explicit accession numbers
 
-The collection stores two lists and derives the third:
+The collection stores two dictionaries and derives the third:
 
 - `all_filings`: every filing returned by the query
 - `amended_filings`: amendment filings
@@ -38,15 +38,25 @@ from edgar import Filing
 
 
 class FilingCollection:
-    def __init__(self, original_filings: list[Filing], amended_filings: list[Filing]):
+    def __init__(
+        self,
+        original_filings: dict[str, list[Filing]],
+        amended_filings: dict[str, list[Filing]],
+    ):
         self._original = original_filings
         self._amended = amended_filings
 
     def __iter__(self) -> Iterator[Filing]:
-        return iter(self.all_filings)
+        for company_filings in self.all_filings.values():
+            for filings in company_filings.values():
+                yield from filings
 
     def __len__(self) -> int:
-        return len(self._original + self._amended)
+        return sum(
+            len(filings)
+            for company_filings in self.all_filings.values()
+            for filings in company_filings.values()
+        )
 
     @classmethod
     def from_quarters(
@@ -66,17 +76,27 @@ class FilingCollection:
         pass
 
     @classmethod
-    def from_accessions(cls, *, accessions: list[str], include_amendments: bool) -> Self:
+    def from_accessions(
+        cls, *, accessions: list[str], include_amendments: bool
+    ) -> Self:
         pass
 
     @property
-    def all_filings(self) -> list[Filing]:
-        return self._original + self._amended
+    def all_filings(self) -> dict[str, dict[str, list[Filing]]]:
+        ciks = self._original.keys() | self._amended.keys()
+
+        return {
+            cik: {
+                "original": self._original.get(cik, []),
+                "amended": self._amended.get(cik, []),
+            }
+            for cik in ciks
+        }
 
     @property
-    def origianl_filings(self) -> list[Filing]:
-        return list(self._original)
+    def original_filings(self) -> dict[str, list[Filing]]:
+        return self._original
 
     @property
-    def amended_filings(self) -> list[Filing]:
+    def amended_filings(self) -> dict[str, list[Filing]]:
         return list(self._amended)
